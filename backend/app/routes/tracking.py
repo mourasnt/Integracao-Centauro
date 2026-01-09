@@ -5,15 +5,12 @@ from uuid import UUID
 import datetime
 
 from app.core.database import SessionLocal
-from app.models.user import User
 from app.services.vblog_tracking import VBlogTrackingService
 from app.services.tracking_service import TrackingService
 from app.services.cte_cliente_service import CTeClienteService
 from app.services.constants import VALID_CODES
 
 from app.schemas.tracking import TrackingCreate
-
-from app.routes.users import get_current_user
 
 router = APIRouter(tags=["Tracking"])
 
@@ -29,7 +26,6 @@ async def reenviar_tracking(
     cte_id: UUID,
     codigo_evento: str = Body(...),
     db: Session = Depends(get_db),
-    _: User = Depends(get_current_user),
 ):
     if codigo_evento not in VALID_CODES:
         raise HTTPException(400, "Código VBLOG inválido")

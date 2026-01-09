@@ -30,7 +30,8 @@ class VBlogTrackingService:
         codigo_evento: str,
         data_evento: Optional[datetime.datetime] = None,
         obs: Optional[str] = None,
-        tipo: str = "NFE"
+        tipo: str = "NFE",
+        anexos: Optional[list] = None,
     ) -> dict:
 
         if codigo_evento not in VALID_CODES_SET:
@@ -38,25 +39,29 @@ class VBlogTrackingService:
 
         data_fmt = (data_evento or datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
 
+        documento = {
+            "cliente": self.cliente,
+            "tipo": tipo if tipo else "PEDIDO",
+            "chave": chave_documento,
+            "eventos": [
+                {
+                    "codigo": int(codigo_evento),
+                    "data": data_fmt,
+                    "obs": obs or VALID_CODES[codigo_evento]["message"]
+                }
+            ]
+        }
+
+        # include anexos right after eventos when provided
+        if anexos:
+            documento["anexos"] = anexos
+
         return {
             "auth": {
                 "usuario": self.usuario,
                 "senha": self.senha
             },
-            "documentos": [
-                {
-                    "cliente": self.cliente,
-                    "tipo": tipo if tipo else "PEDIDO",
-                    "chave": chave_documento,
-                    "eventos": [
-                        {
-                            "codigo": int(codigo_evento),
-                            "data": data_fmt,
-                            "obs": obs or VALID_CODES[codigo_evento]["message"]
-                        }
-                    ]
-                }
-            ]
+            "documentos": [ documento ]
         }
 
     async def enviar(
@@ -65,7 +70,8 @@ class VBlogTrackingService:
         codigo_evento: str,
         data_evento: Optional[datetime.datetime] = None,
         obs: Optional[str] = None,
-        tipo: str = "NFE"
+        tipo: str = "NFE",
+        anexos: Optional[list] = None,
     ) -> Tuple[bool, str]:
 
         payload = self.montar_payload(
@@ -73,14 +79,15 @@ class VBlogTrackingService:
             codigo_evento=codigo_evento,
             data_evento=data_evento,
             obs=obs,
-            tipo=tipo
+            tipo=tipo,
+            anexos=anexos,
         )
 
         client = await self._get_client()
         headers = {"Content-Type": "application/json"}
 
+        print(payload)
         resp = await client.post(self.endpoint, json=payload, headers=headers)
-        print(resp)
         text = resp.text
 
         # Sucesso = qualquer 200/201/204

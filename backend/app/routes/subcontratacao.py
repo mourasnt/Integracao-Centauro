@@ -9,7 +9,11 @@ from app.services.carga_service import CargaService
 from app.services.crypto_service import encrypt_text
 from app.models.cte_subcontratacao import CTeSubcontratacao
 from app.schemas.cte_subcontratacao import CTeSubRead
-from app.routes.users import get_current_user
+# authentication removed
+from app.routes.cargas import get_vblog_service
+from app.services.vblog_envdocs_service import VBlogEnvDocsService
+from app.services.vblog_transito import VBlogTransitoService
+from app.schemas.cte_subcontratacao import CTeSubWithVBlog
 
 router = APIRouter(prefix="/subcontratacao", tags=["Subcontratação"])
 
@@ -46,14 +50,14 @@ def extrair_chave_do_xml(xml_str: str) -> str | None:
 # ---------------------
 @router.post(
     "/upload-xml",
-    response_model=CTeSubRead,
+    response_model=dict,  # pode usar Pydantic se quiser formalizar
     summary="Faz upload do XML de subcontratação e vincula a uma carga."
 )
 async def upload_xml_subcontratacao(
     carga_id: UUID,
     arquivo: UploadFile = File(...),
-    user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    vblog: VBlogTransitoService = Depends(get_vblog_service),
 ):
     # 1. Validar carga
     carga = CargaService.obter_por_id(db, carga_id)
@@ -65,22 +69,50 @@ async def upload_xml_subcontratacao(
 
     # 3. Extrair chave automaticamente
     chave = extrair_chave_do_xml(xml_str)
-
     if not chave:
         raise HTTPException(400, "Não foi possível extrair a chave do XML enviado.")
 
-    # 4. Criar registro de subcontratação
+    # 4. Enviar para VBLOG
+    env_service = VBlogEnvDocsService(vblog)
+    result = await env_service.enviar_ctes_and_parse([xml_str])
+
+    if not result:
+        # Falha de comunicação
+        return {
+            "status": 502,
+            "erro": True,
+            "mensagem": "Falha ao comunicar com VBLOG.",
+            "docs": [],
+            "raw": None
+        }
+
+    # 5. Se houve erro no VBLOG
+    if result["erro"]:
+        return {
+            "status": result["status"],
+            "erro": True,
+            "mensagem": result["mensagem"],
+            "docs": result.get("docs", []),
+            "raw": result.get("raw")
+        }
+
+    # 6. Persistir no banco apenas se sucesso
     sub = CTeSubcontratacao(
         carga_id=carga_id,
         chave=chave,
-        xml_encrypted=encrypt_text(xml_str),
+        xml=xml_str,
+        vblog_status_code=result.get("docs")[0].get("Cod") if result.get("docs") else "001",
+        vblog_status_desc=result.get("docs")[0].get("Desc") if result.get("docs") else "Processado com sucesso",
+        vblog_raw_response=result.get("raw"),
+        vblog_attempts=1
     )
 
     db.add(sub)
     db.commit()
     db.refresh(sub)
 
-    return sub
+    # 7. Retorno padrão com dados do VBLOG
+    return result
 
 
 # ---------------------
@@ -90,7 +122,6 @@ async def upload_xml_subcontratacao(
 def obter_subcontratacao(
     sub_id: UUID,
     db: Session = Depends(get_db),
-    _: User = Depends(get_current_user),
 ):
     sub = db.query(CTeSubcontratacao).filter(CTeSubcontratacao.id == sub_id).first()
     if not sub:

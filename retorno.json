@@ -1,0 +1,57 @@
+{
+    "auth": {
+        "usuario": "659622e0526337fd21fb894cb24a72ee",
+        "senha": "843c6e949059ec5040e62ad7330959981d3e505e90146e8be15f2ec0f1fa16d7"
+    },
+    "documentos": [
+        {
+            "cliente": "09098221000380",
+            "tipo": "NFE",
+            "chave": "31250809098221000380550030019693041186026441",
+            "eventos": [
+                {
+                    "codigo": 1,
+                    "data": "2026-01-07 14: 21: 12",
+                    "obs": "ENTREGA REALIZADA"
+                }
+            ],
+            "anexos": [
+                {
+                    "arquivo": {
+                        "nome": "/attachments/bf7a30c40df442398da34164b9d1c385.png",
+                        "dados": "iVBORqC+pXWPX..........."
+                    }
+                }
+            ]
+        }
+    ]
+}
+
+{
+    "message": "OK",
+    "status": 1,
+    "data": {
+        "0": {
+            "cliente": "09098221000380",
+            "tipo": "NFE",
+            "chave": "31250809098221000380550030019693041186026441",
+            "eventos": [
+                {
+                    "codigo": 1,
+                    "data": "2026-01-07 14:21:12",
+                    "obs": "ENTREGA REALIZADA"
+                }
+            ],
+            "anexos": null,
+            "numero": null,
+            "serie": null,
+            "tipo_op": null,
+            "minuta": null,
+            "coleta": null,
+            "status": 1,
+            "message": "Evento(s) registrado(s) com sucesso!",
+            "messages": []
+        },
+        "access_key":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1c3VhcmlvIjp7Im5vbWUiOiJUZXN0ZSIsImlkIjpudWxsLCJlbXByZXNhIjoxODgyNjYsInR"
+    }
+}

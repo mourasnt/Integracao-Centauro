@@ -3,11 +3,9 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from app.core.database import SessionLocal
-from app.models.user import User
 from app.services.agendamento_service import AgendamentoService
 from app.services.carga_service import CargaService
 from app.schemas.agendamento import AgendamentoCreate, AgendamentoRead
-from app.routes.users import get_current_user, require_admin
 
 
 router = APIRouter(
@@ -34,7 +32,6 @@ def get_db():
 def obter_agendamento(
     carga_id: UUID,
     db: Session = Depends(get_db),
-    _: User = Depends(get_current_user),
 ):
     ag = AgendamentoService.obter_por_carga(db, carga_id)
     if not ag:
@@ -51,7 +48,6 @@ def atualizar_agendamento(
     carga_id: UUID,
     data: AgendamentoCreate,
     db: Session = Depends(get_db),
-    _: User = Depends(get_current_user),
 ):
 
     # ⚠️ Garantir que o carga_id do body seja igual ao da rota
@@ -76,7 +72,6 @@ def atualizar_agendamento(
 def remover_agendamento(
     carga_id: UUID,
     db: Session = Depends(get_db),
-    _: User = Depends(require_admin),
 ):
     ag = AgendamentoService.obter_por_carga(db, carga_id)
     if not ag:

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from fastapi import FastAPI
-from app.routes.users import router as users_router
+from fastapi.staticfiles import StaticFiles
+from app.config.settings import ATTACHMENTS_DIR, ATTACHMENT_BASE_URL
 from app.routes.cargas import router as cargas_router
 from app.routes.agendamentos import router as agendamentos_router
 from app.routes.subcontratacao import router as subcontratacao_router
@@ -8,8 +8,24 @@ from app.routes.tracking import router as tracking_router
 from app.routes.localidades import router as localidades_router
 from fastapi.middleware.cors import CORSMiddleware
 
+from pathlib import Path
+
 app = FastAPI()
-app.include_router(users_router)
+
+# ensure attachments directory exists before mounting
+Path(ATTACHMENTS_DIR).mkdir(parents=True, exist_ok=True)
+
+# serve attachments uploaded via AttachmentService
+app.mount(ATTACHMENT_BASE_URL, StaticFiles(directory=ATTACHMENTS_DIR), name="attachments")
+
+from app.models.base import Base
+from app.core.database import engine
+
+@app.on_event("startup")
+def create_tables():
+    """Cria as tabelas no banco de dados automaticamente na inicialização."""
+    # Operação idempotente: não recria tabelas que já existem
+    Base.metadata.create_all(bind=engine)
 app.include_router(cargas_router)
 app.include_router(agendamentos_router)
 app.include_router(subcontratacao_router)

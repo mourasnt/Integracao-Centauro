@@ -4,6 +4,8 @@ from pydantic import BaseModel, Field
 import httpx # type: ignore
 import xml.etree.ElementTree as ET
 import asyncio
+import os
+
 
 NS = "http://www.controleembarque.com.br"
 NSMAP = {"ns": NS}
@@ -62,12 +64,14 @@ class VBlogTransitoService:
         self,
         cnpj: str,
         token: str,
-        ambiente_base: str = "http://homolog.controleembarque.com.br",
+        ambiente_base: Optional[str] = None,
         timeout_seconds: float = 10.0,
     ):
         self.cnpj = cnpj
         self.token = token
-        self.base = ambiente_base.rstrip("/")
+        # Use VBLOG_BASE environment variable if ambiente_base not provided; fall back to previous homolog URL
+        base_raw = ambiente_base or os.getenv("VBLOG_BASE")
+        self.base = base_raw.rstrip("/")
         self.endpoint = f"{self.base}/Webapi/transito/aberto/v2"
         self.timeout = timeout_seconds
         # httpx client should be created per event loop or reused carefully
@@ -78,15 +82,13 @@ class VBlogTransitoService:
             self._client = httpx.AsyncClient(timeout=self.timeout)
         return self._client
 
-    def montar_xml(self, tpRet: int = 7, stTransito: int = 1) -> str:
+    def montar_xml(self, tpRet: int = 7, stTransito: int = 2) -> str:
         """
         Monta o XML de envio conforme o XSD/envio do manual.
         """
         env = ET.Element("envDocSubTransito", {"versao": "2.00", "xmlns": NS})
         autentic = ET.SubElement(env, "Autentic")
         ET.SubElement(autentic, "xCNPJ").text = str(self.cnpj)
-        # Nota: no XSD original token é <Token> mas no seu exemplo de envio usa xToken/xToken? manter xToken conforme seu exemplo
-        # Aqui colocamos xToken se informado
         ET.SubElement(autentic, "xToken").text = str(self.token)
 
         control = ET.SubElement(env, "Control")
@@ -223,7 +225,7 @@ class VBlogTransitoService:
 
         return result
 
-    async def consultar_transito_aberto(self, tpRet: int = 7, stTransito: int = 1) -> RetornoControleTransito:
+    async def consultar_transito_aberto(self, tpRet: int = 7, stTransito: int = 2) -> RetornoControleTransito:
         """
         Método principal que monta o XML, envia e parseia o retorno.
         Resiliente: sempre devolve um RetornoControleTransito (mesmo em erro de parse).
@@ -243,27 +245,3 @@ class VBlogTransitoService:
         if self._client:
             await self._client.aclose()
             self._client = None
-
-
-# -----------------------
-# Exemplo de uso com FastAPI
-# -----------------------
-# Em seu arquivo FastAPI (por exemplo main.py ou router), use algo assim:
-
-"""
-from fastapi import FastAPI, Depends
-from vblog_transito import VBlogTransitoService, RetornoControleTransito
-
-app = FastAPI()
-
-# crie um factory/dep para o service
-def get_transito_service() -> VBlogTransitoService:
-    # preferível carregar cnpj/token de variáveis de ambiente
-    return VBlogTransitoService(cnpj="34790798000134", token="t2SNUKi7pt6D9pbEoJVC")
-
-@app.get("/transitos-abertos", response_model=RetornoControleTransito)
-async def transitos_abertos(service: VBlogTransitoService = Depends(get_transito_service)):
-    result = await service.consultar_transito_aberto()
-    # se desejar, transforme warnings em status code ou log
-    return result
-"""

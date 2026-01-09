@@ -37,6 +37,11 @@ class CargaUpdate(CargaBase):
     status: Optional[CargaStatus] = None
 
 
+class CargaStatusIn(BaseModel):
+    """Input model used by endpoints to accept only the code for status updates."""
+    code: str
+
+
 class CargaRead(CargaBase):
     id: uuid.UUID
     status: CargaStatus

@@ -1,0 +1,208 @@
+<ns0:cteProc xmlns:ns0= "http://www.controleembarque.com.br" xmlns:ns1= "http://www.portalfiscal.inf.br/cte" xmlns:ns2= "http://www.w3.org/2000/09/xmldsig#" versao= "4.00">
+    <ns1:CTe>
+        <ns1:infCte versao="4.00" Id="CTe31251208046796000125570210000012831297365086">
+            <ns1:ide>
+                <ns1:cUF>31</ns1:cUF>
+                <ns1:cCT>29736508</ns1:cCT>
+                <ns1:CFOP>6353</ns1:CFOP>
+                <ns1:natOp>PREST SERV TRANSP A ESTABELECIMENTO COMERCIAL</ns1:natOp>
+                <ns1:mod>57</ns1:mod>
+                <ns1:serie>21</ns1:serie>
+                <ns1:nCT>1283</ns1:nCT>
+                <ns1:dhEmi>2025-12-30T00:24:09-03:00</ns1:dhEmi>
+                <ns1:tpImp>1</ns1:tpImp>
+                <ns1:tpEmis>1</ns1:tpEmis>
+                <ns1:cDV>6</ns1:cDV>
+                <ns1:tpAmb>2</ns1:tpAmb>
+                <ns1:tpCTe>0</ns1:tpCTe>
+                <ns1:procEmi>0</ns1:procEmi>
+                <ns1:verProc>NDDigital CTe 4.8.5</ns1:verProc>
+                <ns1:cMunEnv>3125101</ns1:cMunEnv>
+                <ns1:xMunEnv>EXTREMA</ns1:xMunEnv>
+                <ns1:UFEnv>MG</ns1:UFEnv>
+                <ns1:modal>01</ns1:modal>
+                <ns1:tpServ>0</ns1:tpServ>
+                <ns1:cMunIni>3125101</ns1:cMunIni>
+                <ns1:xMunIni>EXTREMA</ns1:xMunIni>
+                <ns1:UFIni>MG</ns1:UFIni>
+                <ns1:cMunFim>4113700</ns1:cMunFim>
+                <ns1:xMunFim>LONDRINA</ns1:xMunFim>
+                <ns1:UFFim>PR</ns1:UFFim>
+                <ns1:retira>1</ns1:retira>
+                <ns1:indIEToma>1</ns1:indIEToma>
+                <ns1:toma3>
+                    <ns1:toma>0</ns1:toma>
+                </ns1:toma3>
+            </ns1:ide>
+            <ns1:compl>
+                <ns1:xObs>RICMS MG 2023, ANEXO X, PARTE 1, ITEM 162Transporte subcontratado com (3ZX
+                    TRANSPORTES E SERVICOS LTDA)ENTREGA</ns1:xObs>
+                <ns1:ObsCont xCampo="SUB">
+                    <ns1:xTexto>34790798000134</ns1:xTexto>
+                </ns1:ObsCont>
+            </ns1:compl>
+            <ns1:emit>
+                <ns1:CNPJ>08046796000125</ns1:CNPJ>
+                <ns1:IE>0010365990086</ns1:IE>
+                <ns1:xNome>VBLOG - LOGISTICA E TRANSPORTES LTDA</ns1:xNome>
+                <ns1:xFant>VBLOG MG 7120</ns1:xFant>
+                <ns1:enderEmit>
+                    <ns1:xLgr>RUA MARTIS GONCALVES DE SOUZA</ns1:xLgr>
+                    <ns1:nro>346</ns1:nro>
+                    <ns1:xCpl>SALA 02 A</ns1:xCpl>
+                    <ns1:xBairro>PIRES</ns1:xBairro>
+                    <ns1:cMun>3125101</ns1:cMun>
+                    <ns1:xMun>EXTREMA</ns1:xMun>
+                    <ns1:CEP>37640000</ns1:CEP>
+                    <ns1:UF>MG</ns1:UF>
+                </ns1:enderEmit>
+                <ns1:CRT>3</ns1:CRT>
+            </ns1:emit>
+            <ns1:rem>
+                <ns1:CNPJ>09098221000380</ns1:CNPJ>
+                <ns1:IE>0018945030018</ns1:IE>
+                <ns1:xNome>CTE EMITIDO EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</ns1:xNome>
+                <ns1:xFant>8001</ns1:xFant>
+                <ns1:enderReme>
+                    <ns1:xLgr>MARTINS GONCALVES DE SOUZA</ns1:xLgr>
+                    <ns1:nro>346</ns1:nro>
+                    <ns1:xBairro>DOS PIRES</ns1:xBairro>
+                    <ns1:cMun>3125101</ns1:cMun>
+                    <ns1:xMun>EXTREMA</ns1:xMun>
+                    <ns1:CEP>37640000</ns1:CEP>
+                    <ns1:UF>MG</ns1:UF>
+                    <ns1:cPais>1058</ns1:cPais>
+                    <ns1:xPais>Brasil</ns1:xPais>
+                </ns1:enderReme>
+            </ns1:rem>
+            <ns1:exped>
+                <ns1:CNPJ>09098221000380</ns1:CNPJ>
+                <ns1:IE>0018945030018</ns1:IE>
+                <ns1:xNome>CTE EMITIDO EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</ns1:xNome>
+                <ns1:enderExped>
+                    <ns1:xLgr>RUA MARTINS GONCALVES DE SOUZA</ns1:xLgr>
+                    <ns1:nro>346</ns1:nro>
+                    <ns1:xBairro>DOS PIRES</ns1:xBairro>
+                    <ns1:cMun>3125101</ns1:cMun>
+                    <ns1:xMun>EXTREMA</ns1:xMun>
+                    <ns1:CEP>37640000</ns1:CEP>
+                    <ns1:UF>MG</ns1:UF>
+                    <ns1:cPais>1058</ns1:cPais>
+                    <ns1:xPais>Brasil</ns1:xPais>
+                </ns1:enderExped>
+            </ns1:exped>
+            <ns1:receb>
+                <ns1:CNPJ>06347409004667</ns1:CNPJ>
+                <ns1:IE>9043037398</ns1:IE>
+                <ns1:xNome>CTE EMITIDO EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</ns1:xNome>
+                <ns1:enderReceb>
+                    <ns1:xLgr>RODOVIA CELSO GARCIA KM 377</ns1:xLgr>
+                    <ns1:nro>S/N</ns1:nro>
+                    <ns1:xBairro>GLEBA FAZENDA PALHA</ns1:xBairro>
+                    <ns1:cMun>4113700</ns1:cMun>
+                    <ns1:xMun>LONDRINA</ns1:xMun>
+                    <ns1:CEP>86050901</ns1:CEP>
+                    <ns1:UF>PR</ns1:UF>
+                    <ns1:cPais>1058</ns1:cPais>
+                    <ns1:xPais>Brasil</ns1:xPais>
+                </ns1:enderReceb>
+            </ns1:receb>
+            <ns1:dest>
+                <ns1:CNPJ>06347409004667</ns1:CNPJ>
+                <ns1:IE>9043037398</ns1:IE>
+                <ns1:xNome>CTE EMITIDO EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</ns1:xNome>
+                <ns1:enderDest>
+                    <ns1:xLgr>RODOVIA CELSO GARCIA KM 377</ns1:xLgr>
+                    <ns1:nro>S/N</ns1:nro>
+                    <ns1:xBairro>GLEBA FAZENDA PALHA</ns1:xBairro>
+                    <ns1:cMun>4113700</ns1:cMun>
+                    <ns1:xMun>LONDRINA</ns1:xMun>
+                    <ns1:CEP>86050901</ns1:CEP>
+                    <ns1:UF>PR</ns1:UF>
+                    <ns1:cPais>1058</ns1:cPais>
+                    <ns1:xPais>Brasil</ns1:xPais>
+                </ns1:enderDest>
+            </ns1:dest>
+            <ns1:vPrest>
+                <ns1:vTPrest>1200.00</ns1:vTPrest>
+                <ns1:vRec>1200.00</ns1:vRec>
+                <ns1:Comp>
+                    <ns1:xNome>FRETE PESO</ns1:xNome>
+                    <ns1:vComp>1200.00</ns1:vComp>
+                </ns1:Comp>
+            </ns1:vPrest>
+            <ns1:imp>
+                <ns1:ICMS>
+                    <ns1:ICMS45>
+                        <ns1:CST>40</ns1:CST>
+                    </ns1:ICMS45>
+                </ns1:ICMS>
+            </ns1:imp>
+            <ns1:infCTeNorm>
+                <ns1:infCarga>
+                    <ns1:vCarga>113612.00</ns1:vCarga>
+                    <ns1:proPred>DIVERSOS</ns1:proPred>
+                    <ns1:infQ>
+                        <ns1:cUnid>01</ns1:cUnid>
+                        <ns1:tpMed>PESO BRUTO</ns1:tpMed>
+                        <ns1:qCarga>1.8000</ns1:qCarga>
+                    </ns1:infQ>
+                    <ns1:infQ>
+                        <ns1:cUnid>03</ns1:cUnid>
+                        <ns1:tpMed>VOLUMES</ns1:tpMed>
+                        <ns1:qCarga>1.0000</ns1:qCarga>
+                    </ns1:infQ>
+                    <ns1:vCargaAverb>113612.00</ns1:vCargaAverb>
+                </ns1:infCarga>
+                <ns1:infDoc>
+                    <ns1:infNFe>
+                        <ns1:chave>31250809098221000380550030019693041186026441</ns1:chave>
+                    </ns1:infNFe>
+                </ns1:infDoc>
+                <ns1:infModal versaoModal="4.00">
+                    <ns1:rodo>
+                        <ns1:RNTRC>52273033</ns1:RNTRC>
+                    </ns1:rodo>
+                </ns1:infModal>
+            </ns1:infCTeNorm>
+        </ns1:infCte>
+        <ns1:infCTeSupl>
+            <ns1:qrCodCTe>
+                https://portalcte.fazenda.mg.gov.br/portalcte/sistema/qrcode.xhtml?chCTe=31251208046796000125570210000012831297365086&amp;amp;tpAmb=2</ns1:qrCodCTe>
+        </ns1:infCTeSupl>
+        <ns2:Signature>
+            <ns2:SignedInfo>
+                <ns2:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+                <ns2:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+                <ns2:Reference URI="#CTe31251208046796000125570210000012831297365086">
+                    <ns2:Transforms>
+                        <ns2:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+                        <ns2:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+                    </ns2:Transforms>
+                    <ns2:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+                    <ns2:DigestValue>/WcDqUoMJvu0Yir0BndsN+vj6qk=</ns2:DigestValue>
+                </ns2:Reference>
+            </ns2:SignedInfo>
+            <ns2:SignatureValue>
+                Z34yyW4cxqnQFXdrnk2tIfQnpnRrAUW/NQaDcGsVud4pJmHVz/4fNvUZb/Kd3EUPJTcc0ZXgnOWzJI7kH55Wp27D3Zld3RZrEqU5pkyQZhV0VeX1Yu19H5SJMvkj4qTODh9Pz8Tf7ZHVcF7JJpT7D2B/p94zJoPludJdvBWUk37FM0y+Q16ute1uAJGo+7scrX5hrrMFm0s2jM/FqJVh78DSKdTIvv/sKh8TLoYz7EjN/okZ9f6XKcW5P/UfgeXMlwEzRkLR+0DxhZh3Xk8irCuOCXPjtX5Of09fz7Su2zPnwNqL46TS3yHEP3k5EH3fNtxXcRdh4xkiDZouw4gu+g==</ns2:SignatureValue>
+            <ns2:KeyInfo>
+                <ns2:X509Data>
+                    <ns2:X509Certificate>
+                        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</ns2:X509Certificate>
+                </ns2:X509Data>
+            </ns2:KeyInfo>
+        </ns2:Signature>
+    </ns1:CTe>
+    <ns1:protCTe versao="4.00">
+        <ns1:infProt>
+            <ns1:tpAmb>2</ns1:tpAmb>
+            <ns1:verAplic>W-7.1.22</ns1:verAplic>
+            <ns1:chCTe>31251208046796000125570210000012831297365086</ns1:chCTe>
+            <ns1:dhRecbto>2025-12-30T00:24:18-03:00</ns1:dhRecbto>
+            <ns1:nProt>131250004777777</ns1:nProt>
+            <ns1:digVal>/WcDqUoMJvu0Yir0BndsN+vj6qk=</ns1:digVal>
+            <ns1:cStat>100</ns1:cStat>
+            <ns1:xMotivo>Autorizado o uso do CT-e</ns1:xMotivo>
+        </ns1:infProt>
+    </ns1:protCTe>
+</ns0:cteProc>

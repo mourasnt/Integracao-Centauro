@@ -16,6 +16,7 @@ class CTeClienteRead(CTeClienteBase):
     id: uuid.UUID
     carga_id: uuid.UUID
     xml: Optional[str] = None  # já descriptografado
+    nfs: Optional[list[str]] = None  # lista de NFs associadas
 
     class Config:
         from_attributes = True

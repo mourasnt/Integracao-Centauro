@@ -50,6 +50,35 @@ class CTeSubcontratacao(Base):
         onupdate=datetime.datetime.now(datetime.timezone.utc),
     )
 
+    # VBLOG status fields
+    vblog_status_code: Mapped[Optional[str]] = mapped_column(
+        String(20),
+        nullable=True,
+        default=None,
+    )
+
+    vblog_status_desc: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+        default=None,
+    )
+
+    vblog_raw_response: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+        default=None,
+    )
+
+    vblog_attempts: Mapped[int] = mapped_column(
+        nullable=False,
+        default=0,
+    )
+
+    vblog_received_at: Mapped[Optional[datetime.datetime]] = mapped_column(
+        nullable=True,
+        default=None,
+    )
+
     # relacionamentos
     carga: Mapped["Carga"] = relationship(
         back_populates="ctes_subcontratacao"

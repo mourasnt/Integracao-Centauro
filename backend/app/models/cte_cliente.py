@@ -64,6 +64,31 @@ class CTeCliente(Base):
         lazy="selectin"
     )
 
+    # Armazenamento de NFs associado a este CT-e como JSON no banco
+    nfs_json: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+        default=None,
+    )
+
+    @property
+    def nfs(self) -> list:
+        import json
+        if not self.nfs_json:
+            return []
+        try:
+            return json.loads(self.nfs_json)
+        except Exception:
+            return []
+
+    @nfs.setter
+    def nfs(self, value: list) -> None:
+        import json
+        try:
+            self.nfs_json = json.dumps(value or [])
+        except Exception:
+            self.nfs_json = None
+
     # propriedades convenientes
     @property
     def xml(self) -> Optional[str]:
