@@ -1,16 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Body, Request
 from fastapi import File, UploadFile
 
-# multipart support (optional during tests)
-try:
-    from fastapi import Form  # type: ignore
-    HAS_MULTIPART = True
-except Exception:
-    # python-multipart not installed in test env; provide safe no-op placeholder for Form
-    def Form(*args, **kwargs):
-        return None
+from fastapi import Form  # type: ignore
 
-    HAS_MULTIPART = False
 from sqlalchemy.orm import Session
 from uuid import UUID
 from app.core.database import SessionLocal
@@ -226,7 +218,7 @@ def download_cte_xml(
 async def alterar_status(
     carga_id: UUID,
     novo_status: Optional[Any] = Body(None, example={"code": "1"}),
-    anexo: Optional[UploadFile] = File(None) if HAS_MULTIPART else None,
+    anexo: Optional[UploadFile] = File(None),
     request: Request = None,
     db: Session = Depends(get_db),
 ):
