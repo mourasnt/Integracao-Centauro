@@ -1,0 +1,55 @@
+# Docker build configuration
+
+# Build arguments
+ARG_PYTHON_VERSION=3.12-slim
+
+# Exclude development directories
+__pycache__
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Exclude version control
+.git/
+.gitignore
+.gitattributes
+
+# Exclude development files
+.env
+.env.local
+.env.*.local
+*.md
+README.md
+LICENSE
+.editorconfig
+.vscode/
+.idea/
+
+# Exclude test artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+coverage.xml
+
+# Exclude database files (SQLite)
+*.db
+*.sqlite
+*.sqlite3
+
+# Exclude large files
+attachments/*
+!attachments/.gitkeep
+
+# Node.js (if any frontend in same repo)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
