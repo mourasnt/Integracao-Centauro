@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import uuid
 import datetime
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
@@ -43,6 +43,13 @@ class TrackingEvent(Base):
         ForeignKey("client_ctes.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
+    )
+
+    invoice_key: Mapped[Optional[str]] = mapped_column(
+        String(60),
+        nullable=True,
+        index=True,
+        comment="NF-e key this event applies to (null = all invoices in CTe)",
     )
 
     event_code: Mapped[str] = mapped_column(

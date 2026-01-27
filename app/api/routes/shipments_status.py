@@ -124,6 +124,14 @@ async def process_attachments(
     return final_attachments
 
 
+def parse_invoice_keys(body: dict) -> Optional[list[str]]:
+    """Extract invoice keys from request body."""
+    keys = body.get("notas") or body.get("invoice_keys") or body.get("nfs")
+    if keys and isinstance(keys, list):
+        return [str(k) for k in keys]
+    return None
+
+
 @router.post("/{shipment_id}/status")
 async def update_status(
     shipment_id: UUID,
@@ -134,16 +142,34 @@ async def update_status(
     tracking_service: VBlogTrackingService = Depends(get_tracking_service),
 ):
     """
-    Update shipment status and send tracking events to Brudam.
+    Update status for invoices in a shipment and send tracking events to Brudam.
     
     Accepts status code in various formats:
     - Raw code: "1" or 1
     - JSON string: '{"code": "1"}'
     - Object: {"code": "1"}
+    
+    Optional invoice filtering:
+    - Without 'notas': updates ALL invoices in the shipment
+    - With 'notas': updates only the specified invoices
+    
+    Example payloads:
+        {"code": "1"}  # Update all invoices
+        {"code": "1", "notas": ["35240...", "35241..."]}  # Update specific invoices
     """
     shipment = await ShipmentService.get_by_id(db, shipment_id)
     if not shipment:
         raise HTTPException(404, "Shipment not found")
+
+    # Parse request body for invoice keys filter
+    invoice_keys_filter: Optional[list[str]] = None
+    try:
+        if request and request.headers.get("content-type", "").startswith("application/json"):
+            body = await request.json()
+            if isinstance(body, dict):
+                invoice_keys_filter = parse_invoice_keys(body)
+    except Exception:
+        pass
 
     # Parse multipart form if applicable
     if request and request.headers.get("content-type", "").startswith("multipart/"):
@@ -163,45 +189,54 @@ async def update_status(
     if code_val not in VALID_CODES_SET:
         raise HTTPException(400, "Invalid tracking code")
 
-    # Update shipment status
-    status_model = ShipmentStatus(code=code_val)
-    shipment.status = status_model.model_dump()
-    await db.commit()
-    await db.refresh(shipment)
-
     # Process attachments
     attachment_service = AttachmentService()
     final_attachments = await process_attachments(attachment, attachments_input, attachment_service)
 
-    # Send tracking events for each CTe
+    # Update status and send tracking events for each invoice
     results = []
+    total_updated = 0
+    
     for cte in shipment.client_ctes:
-        for nf in cte.invoices:
+        # Update invoice statuses in the CTe
+        updated_invoices = cte.update_invoice_status(invoice_keys_filter, code_val)
+        total_updated += len(updated_invoices)
+        
+        # Send tracking to Brudam for each updated invoice
+        for inv in updated_invoices:
+            invoice_key = inv["key"]
             success, resp_text = await tracking_service.send(
-                document_key=nf,
+                document_key=invoice_key,
                 event_code=code_val,
                 attachments=final_attachments,
             )
             results.append({
                 "cte": str(cte.id),
-                "nf": nf,
+                "nf": invoice_key,
+                "status": inv["status"],
                 "ok": success,
                 "response": resp_text[:500] if resp_text else None,
             })
 
-        # Register tracking event
-        await TrackingEventService.register(
-            db,
-            TrackingEventCreate(
-                client_cte_id=cte.id,
-                event_code=code_val,
-                description=VALID_CODES[code_val]["message"],
-                event_date=datetime.datetime.now(datetime.timezone.utc),
-            ),
-        )
+            # Register tracking event for this specific invoice
+            await TrackingEventService.register(
+                db,
+                TrackingEventCreate(
+                    client_cte_id=cte.id,
+                    invoice_key=invoice_key,
+                    event_code=code_val,
+                    description=VALID_CODES[code_val]["message"],
+                    event_date=datetime.datetime.now(datetime.timezone.utc),
+                ),
+            )
+
+    # Commit all changes
+    await db.commit()
 
     return {
         "status": "ok",
         "code_sent": code_val,
+        "invoices_updated": total_updated,
+        "filter_applied": invoice_keys_filter is not None,
         "results": results,
     }

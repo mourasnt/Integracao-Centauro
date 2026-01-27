@@ -15,10 +15,57 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import String, Text, ForeignKey
 
 from .base import Base, TimestampMixin, EncryptedXMLMixin
+from app.services.constants import VALID_CODES
 
 if TYPE_CHECKING:
     from .shipment import Shipment
     from .tracking_event import TrackingEvent
+
+
+class InvoiceStatus:
+    """
+    Helper class for invoice status operations.
+    
+    Each invoice is stored as: {"key": "35240...", "status": {"code": "1", "message": "...", "type": "..."}}
+    """
+    
+    DEFAULT_CODE = "10"  # Initial status code
+    
+    @staticmethod
+    def create(key: str, code: str = None) -> dict:
+        """Create invoice object with key and status."""
+        status_code = code or InvoiceStatus.DEFAULT_CODE
+        status_info = VALID_CODES.get(status_code, {})
+        return {
+            "key": key,
+            "status": {
+                "code": status_code,
+                "message": status_info.get("message", ""),
+                "type": status_info.get("type", ""),
+            }
+        }
+    
+    @staticmethod
+    def update_status(invoice: dict, code: str) -> dict:
+        """Update invoice status in place and return it."""
+        status_info = VALID_CODES.get(code, {})
+        invoice["status"] = {
+            "code": code,
+            "message": status_info.get("message", ""),
+            "type": status_info.get("type", ""),
+        }
+        return invoice
+    
+    @staticmethod
+    def migrate_legacy(data: list) -> list:
+        """Migrate legacy format (list of strings) to new format (list of dicts)."""
+        if not data:
+            return []
+        # Check if already new format
+        if data and isinstance(data[0], dict) and "key" in data[0]:
+            return data
+        # Migrate from old format
+        return [InvoiceStatus.create(key) for key in data]
 
 
 class ClientCTe(Base, TimestampMixin, EncryptedXMLMixin):
@@ -75,22 +122,64 @@ class ClientCTe(Base, TimestampMixin, EncryptedXMLMixin):
     )
 
     @property
-    def invoices(self) -> list:
-        """Get list of associated NF-e keys."""
+    def invoices(self) -> list[dict]:
+        """Get list of invoices with individual status."""
         if not self.invoices_json:
             return []
         try:
-            return json.loads(self.invoices_json)
+            data = json.loads(self.invoices_json)
+            # Auto-migrate legacy format
+            return InvoiceStatus.migrate_legacy(data)
         except Exception:
             return []
 
     @invoices.setter
     def invoices(self, value: list) -> None:
-        """Set list of associated NF-e keys."""
+        """Set list of invoices. Accepts both old format (strings) and new format (dicts)."""
         try:
-            self.invoices_json = json.dumps(value or [])
+            if value:
+                # Migrate if needed
+                migrated = InvoiceStatus.migrate_legacy(value)
+                self.invoices_json = json.dumps(migrated)
+            else:
+                self.invoices_json = None
         except Exception:
             self.invoices_json = None
+
+    @property
+    def invoice_keys(self) -> list[str]:
+        """Get just the invoice keys (for backward compatibility and filtering)."""
+        return [inv["key"] if isinstance(inv, dict) else inv for inv in self.invoices]
+
+    def get_invoice_by_key(self, key: str) -> Optional[dict]:
+        """Get a specific invoice by its key."""
+        for inv in self.invoices:
+            if inv.get("key") == key:
+                return inv
+        return None
+
+    def update_invoice_status(self, keys: Optional[list[str]], code: str) -> list[dict]:
+        """
+        Update status for specific invoices or all if keys is None.
+        
+        Args:
+            keys: List of invoice keys to update, or None to update all
+            code: New status code
+            
+        Returns:
+            List of updated invoice objects
+        """
+        invoices = self.invoices
+        keys_set = set(keys) if keys else None
+        updated = []
+        
+        for inv in invoices:
+            if keys_set is None or inv["key"] in keys_set:
+                InvoiceStatus.update_status(inv, code)
+                updated.append(inv)
+        
+        self.invoices_json = json.dumps(invoices)
+        return updated
 
     # Legacy property aliases
     @property

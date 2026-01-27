@@ -5,8 +5,27 @@ Pydantic models for client CTe API endpoints.
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Any
 import uuid
+
+
+class InvoiceStatusSchema(BaseModel):
+    """Status of an individual invoice."""
+    code: str = Field(..., alias="codigo")
+    message: str = Field("", alias="mensagem")
+    type: str = Field("", alias="tipo")
+
+    class Config:
+        populate_by_name = True
+
+
+class InvoiceSchema(BaseModel):
+    """Invoice with individual status."""
+    key: str = Field(..., alias="chave")
+    status: InvoiceStatusSchema
+
+    class Config:
+        populate_by_name = True
 
 
 class ClientCTeBase(BaseModel):
@@ -27,7 +46,7 @@ class ClientCTeRead(ClientCTeBase):
     id: uuid.UUID
     shipment_id: uuid.UUID = Field(..., alias="carga_id")
     xml: Optional[str] = None
-    invoices: Optional[List[str]] = Field(None, alias="nfs")
+    invoices: Optional[List[InvoiceSchema]] = Field(None, alias="nfs")
 
     class Config:
         from_attributes = True

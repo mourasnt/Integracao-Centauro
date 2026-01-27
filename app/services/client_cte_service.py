@@ -87,11 +87,41 @@ class ClientCTeService:
     async def update_invoices(
         db: AsyncSession,
         cte: ClientCTe,
-        invoices: List[str],
+        invoice_keys: List[str],
     ) -> ClientCTe:
-        """Update associated NF-e invoices."""
-        cte.invoices = invoices
+        """
+        Update associated NF-e invoices.
+        Accepts list of keys - they will be converted to new format with default status.
+        """
+        # The invoices setter now handles migration to new format
+        cte.invoices = invoice_keys
         await db.commit()
         await db.refresh(cte)
-        logger.info(f"Updated invoices for CTe: {cte.access_key}")
+        logger.info(f"Updated invoices for CTe: {cte.access_key} ({len(invoice_keys)} invoices)")
         return cte
+
+    @staticmethod
+    async def update_invoice_status(
+        db: AsyncSession,
+        cte: ClientCTe,
+        invoice_keys: Optional[List[str]],
+        status_code: str,
+    ) -> List[dict]:
+        """
+        Update status for specific invoices or all if keys is None.
+        
+        Args:
+            cte: ClientCTe instance
+            invoice_keys: List of keys to update, or None for all
+            status_code: New status code
+            
+        Returns:
+            List of updated invoice objects
+        """
+        updated = cte.update_invoice_status(invoice_keys, status_code)
+        await db.commit()
+        await db.refresh(cte)
+        logger.info(
+            f"Updated status to {status_code} for {len(updated)} invoices in CTe: {cte.access_key}"
+        )
+        return updated
