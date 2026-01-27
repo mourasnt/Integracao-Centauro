@@ -11,7 +11,6 @@ from .user import User
 from .shipment import Shipment, ShipmentStatus
 from .client_cte import ClientCTe
 from .subcontracted_cte import SubcontractedCTe
-from .schedule import Schedule
 from .tracking_event import TrackingEvent
 from .location import State, Municipality
 
@@ -28,7 +27,6 @@ __all__ = [
     "ShipmentStatus",
     "ClientCTe",
     "SubcontractedCTe",
-    "Schedule",
     "TrackingEvent",
     "State",
     "Municipality",

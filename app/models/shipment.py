@@ -1,7 +1,7 @@
 # app/models/shipment.py
 """
 Shipment model (formerly Carga).
-Represents a cargo shipment with associated CTes and schedules.
+ Represents a cargo shipment with associated CTes.
 """
 
 from __future__ import annotations
@@ -21,7 +21,6 @@ from .base import Base, TimestampMixin
 if TYPE_CHECKING:
     from .client_cte import ClientCTe
     from .subcontracted_cte import SubcontractedCTe
-    from .schedule import Schedule
 
 
 class ShipmentStatus(BaseModel):
@@ -56,7 +55,6 @@ class Shipment(Base, TimestampMixin):
     Relationships:
         - client_ctes: CTe documents from the client
         - subcontracted_ctes: CTe documents from subcontractors
-        - schedule: Delivery schedule (1:1)
     """
     __tablename__ = "shipments"
 
@@ -108,11 +106,4 @@ class Shipment(Base, TimestampMixin):
         lazy="selectin",
     )
 
-    schedule: Mapped[Optional["Schedule"]] = relationship(
-        "Schedule",
-        back_populates="shipment",
-        uselist=False,
-        cascade="all, delete-orphan",
-        lazy="selectin",
-    )
 

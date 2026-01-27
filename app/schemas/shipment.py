@@ -66,7 +66,6 @@ class ShipmentRead(ShipmentBase):
     # Relationships - imported here to avoid circular imports
     client_ctes: List[Any] = Field(default_factory=list, alias="ctes_cliente")
     subcontracted_ctes: List[Any] = Field(default_factory=list, alias="ctes_subcontratacao")
-    schedule: Optional[Any] = Field(None, alias="agendamento")
 
     class Config:
         from_attributes = True

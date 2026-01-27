@@ -26,11 +26,6 @@ from .subcontracted_cte import (
     SubcontractedCTeWithVBlog,
     VBlogParsedResponse,
 )
-from .schedule import (
-    ScheduleBase,
-    ScheduleCreate,
-    ScheduleRead,
-)
 from .tracking_event import (
     TrackingEventBase,
     TrackingEventCreate,
@@ -68,11 +63,6 @@ __all__ = [
     "SubcontractedCTeRead",
     "SubcontractedCTeWithVBlog",
     "VBlogParsedResponse",
-    
-    # Schedule
-    "ScheduleBase",
-    "ScheduleCreate",
-    "ScheduleRead",
     
     # Tracking
     "TrackingEventBase",

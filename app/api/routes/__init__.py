@@ -7,7 +7,6 @@ Contains all endpoint definitions organized by resource.
 from fastapi import APIRouter
 
 from . import shipments
-from . import schedules
 from . import subcontracted_ctes
 from . import tracking
 from . import locations
@@ -21,11 +20,6 @@ api_router.include_router(
     tags=["Shipments"],
 )
 
-api_router.include_router(
-    schedules.router,
-    prefix="/shipments",
-    tags=["Schedules"],
-)
 
 api_router.include_router(
     subcontracted_ctes.router,

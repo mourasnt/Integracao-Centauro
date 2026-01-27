@@ -6,7 +6,6 @@ Contains business logic and external integrations.
 
 # Services
 from .shipment_service import ShipmentService
-from .schedule_service import ScheduleService
 from .client_cte_service import ClientCTeService
 from .tracking_event_service import TrackingEventService
 from .location_service import LocationService
@@ -24,7 +23,6 @@ from .vblog import (
 
 __all__ = [
     "ShipmentService",
-    "ScheduleService",
     "ClientCTeService",
     "TrackingEventService",
     "LocationService",
