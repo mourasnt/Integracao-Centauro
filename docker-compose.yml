@@ -6,15 +6,15 @@ services:
     image: postgres:16-alpine
     container_name: centauro_postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-centauro}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-centauro_secure_password}
-      POSTGRES_DB: ${POSTGRES_DB:-centauro_db}
+      POSTGRES_USER: centauro
+      POSTGRES_PASSWORD: centauro_secure_password
+      POSTGRES_DB: centauro_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - centauro_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-centauro}"]
+      test: ["CMD-SHELL", "pg_isready -U centauro"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,39 +28,38 @@ services:
     container_name: centauro_app
     environment:
       # Database
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-centauro}:${POSTGRES_PASSWORD:-centauro_secure_password}@postgres:5432/${POSTGRES_DB:-centauro_db}
+      DATABASE_URL: postgresql+asyncpg://centauro:centauro_secure_password@postgres:5432/centauro_db
       
-      # Security
-      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
-      ALGORITHM: ${ALGORITHM:-HS256}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
-      FERNET_KEY: ${FERNET_KEY:-}
+      # Security (MESMA SECRET_KEY da Nike para autenticação centralizada)
+      SECRET_KEY: 2a12xVtfIpePbkrohfumSDBedzcOFbEaKDOsTcdqYDTIYfk8FOIqe
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 120
+      FERNET_KEY: U5bL4d57O-0gtJ0dEIBjnbcMRtR3vR-FIIh5vuYYJO4=
       
       # Attachments
-      ATTACHMENTS_DIR: ${ATTACHMENTS_DIR:-attachments}
-      ATTACHMENT_BASE_URL: ${ATTACHMENT_BASE_URL:-/attachments}
+      ATTACHMENTS_DIR: attachments
+      ATTACHMENT_BASE_URL: /attachments
       
       # VBLOG Integration
-      VBLOG_CNPJ: ${VBLOG_CNPJ:-}
-      VBLOG_TOKEN: ${VBLOG_TOKEN:-}
-      VBLOG_BASE: ${VBLOG_BASE:-}
+      VBLOG_CNPJ: "34790798000134"
+      VBLOG_TOKEN: "t2SNUKi7pt6D9pbEoJVC"
+      VBLOG_BASE: "http://homolog.controleembarque.com.br"
       
       # Brudam Tracking
-      BRUDAM_USUARIO: ${BRUDAM_USUARIO:-}
-      BRUDAM_SENHA: ${BRUDAM_SENHA:-}
-      BRUDAM_URL_TRACKING: ${BRUDAM_URL_TRACKING:-}
-      BRUDAM_CLIENTE: ${BRUDAM_CLIENTE:-}
+      BRUDAM_USUARIO: "659622e0526337fd21fb894cb24a72ee"
+      BRUDAM_SENHA: "843c6e949059ec5040e62ad7330959981d3e505e90146e8be15f2ec0f1fa16d7"
+      BRUDAM_URL_TRACKING: "https://homosbf.brudam.com.br/api/v1/tracking/ocorrencias"
+      BRUDAM_CLIENTE: "09098221000380"
       
       # CORS
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173
       
       # Python
       PYTHONUNBUFFERED: "1"
     ports:
-      - "${APP_PORT:-8000}:8000"
+      - "8001:8000"
     volumes:
       - ./attachments:/app/attachments
-      - ./.env:/app/.env
     depends_on:
       postgres:
         condition: service_healthy
