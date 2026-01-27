@@ -11,7 +11,9 @@ except Exception:
     InvalidToken = Exception
     _HAS_FERNET = False
 
-from app.config.settings import FERNET_KEY as _FERNET_KEY
+from app.config.settings import settings
+
+_FERNET_KEY = settings.fernet_key
 
 if _HAS_FERNET and not _FERNET_KEY:
     raise RuntimeError("FERNET_KEY não configurada no ambiente (.env)")

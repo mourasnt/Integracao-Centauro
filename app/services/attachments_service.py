@@ -4,18 +4,18 @@ import uuid
 from pathlib import Path
 from typing import Optional
 
-from app.config.settings import ATTACHMENTS_DIR, ATTACHMENT_BASE_URL
+from app.config.settings import settings
 
 
 class AttachmentService:
     """Simple local attachment storage service.
 
-    Saves files under ATTACHMENTS_DIR and exposes a URL using ATTACHMENT_BASE_URL.
+    Saves files under settings.attachments_dir and exposes a URL using settings.attachment_base_url.
     """
 
     def __init__(self, storage_dir: Optional[str] = None, base_url: Optional[str] = None):
-        self.storage_dir = Path(storage_dir or ATTACHMENTS_DIR)
-        self.base_url = base_url or ATTACHMENT_BASE_URL
+        self.storage_dir = Path(storage_dir or settings.attachments_dir)
+        self.base_url = base_url or settings.attachment_base_url
         self.storage_dir.mkdir(parents=True, exist_ok=True)
 
     def _make_filename(self, original_name: Optional[str]) -> str:

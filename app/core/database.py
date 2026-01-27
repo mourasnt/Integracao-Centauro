@@ -6,8 +6,6 @@ Async SQLAlchemy database configuration with thread-safe initialization.
 import asyncio
 from typing import AsyncGenerator
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -71,10 +69,3 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             yield session
         finally:
             await session.close()
-
-
-# Legacy sync engine for backward compatibility during migration
-# TODO: Remove after full async migration
-sync_database_url = settings.database_url.replace("+aiosqlite", "").replace("+asyncpg", "+psycopg2")
-engine = create_engine(sync_database_url)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

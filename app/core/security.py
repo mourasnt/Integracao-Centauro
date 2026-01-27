@@ -16,7 +16,7 @@ except Exception:
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-from app.config.settings import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.config.settings import settings
 import json
 import base64
 
@@ -26,27 +26,34 @@ else:
     pwd_context = None
 
 
-def verify_password(plain_password, hashed_password):
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a plain password against a hashed password."""
     if pwd_context is None:
         # fallback for test environments: compare strings directly
         return plain_password == hashed_password
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_password_hash(password):
+def get_password_hash(password: str) -> str:
+    """Hash a password using bcrypt."""
     if pwd_context is None:
         # fallback for tests: return the plain password (not secure)
         return password[:72]
     return pwd_context.hash(password[:72])
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Create a JWT access token."""
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.now(timezone.utc) + (
+        expires_delta or timedelta(minutes=settings.access_token_expire_minutes)
+    )
     to_encode.update({"exp": expire.isoformat()})
 
     if _HAS_JWT:
-        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+        encoded_jwt = jwt.encode(
+            to_encode, settings.secret_key, algorithm=settings.algorithm
+        )
         # PyJWT retorna bytes em versões antigas, garantir string
         if isinstance(encoded_jwt, bytes):
             encoded_jwt = encoded_jwt.decode('utf-8')
@@ -57,10 +64,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
         return base64.urlsafe_b64encode(raw).decode('utf-8')
 
 
-def decode_access_token(token: str):
+def decode_access_token(token: str) -> Optional[dict]:
+    """Decode and validate a JWT access token."""
     if _HAS_JWT:
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            payload = jwt.decode(
+                token, settings.secret_key, algorithms=[settings.algorithm]
+            )
             return payload
         except InvalidTokenError:
             return None
