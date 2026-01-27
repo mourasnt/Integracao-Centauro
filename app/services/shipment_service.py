@@ -37,7 +37,6 @@ class ShipmentService:
             .options(
                 selectinload(Shipment.client_ctes),
                 selectinload(Shipment.subcontracted_ctes),
-                selectinload(Shipment.schedule),
             )
         )
         return list(result.scalars().all())
@@ -50,7 +49,6 @@ class ShipmentService:
             .options(
                 selectinload(Shipment.client_ctes),
                 selectinload(Shipment.subcontracted_ctes),
-                selectinload(Shipment.schedule),
             )
             .where(Shipment.id == shipment_id)
         )
@@ -64,7 +62,6 @@ class ShipmentService:
             .options(
                 selectinload(Shipment.client_ctes),
                 selectinload(Shipment.subcontracted_ctes),
-                selectinload(Shipment.schedule),
             )
             .where(Shipment.external_id == external_id)
         )
