@@ -5,7 +5,6 @@ Provides shared HTTP client management, XML building, and retry logic.
 """
 
 import asyncio
-from copy import Error
 import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
 from typing import Optional, Any
@@ -129,7 +128,7 @@ class VBlogBaseClient(ABC):
                 last_error = RuntimeError(f"HTTP {resp.status_code}: {resp.text[:500]}")
                 logger.warning(f"Server error {resp.status_code}, attempt {attempt + 1}/{self.max_retries}")
                 
-            except Error as e:
+            except Exception as e:
                 last_error = e
                 logger.warning(f"Network error on attempt {attempt + 1}/{self.max_retries}: {e}")
             
