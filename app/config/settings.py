@@ -51,7 +51,7 @@ class Settings(BaseSettings):
 
     # CORS - stored as string, accessed as property for list
     cors_origins_str: str = Field(
-        default="http://localhost:3000,http://127.0.0.1:3000",
+        default="http://localhost:3000,http://127.0.0.1:3000,http://5.78.121.199:5173",
         alias="cors_origins"
     )
 
