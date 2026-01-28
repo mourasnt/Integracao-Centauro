@@ -42,8 +42,8 @@ services:
       
       # VBLOG Integration
       VBLOG_CNPJ: "34790798000134"
-      VBLOG_TOKEN: "t2SNUKi7pt6D9pbEoJVC"
-      VBLOG_BASE: "http://homolog.controleembarque.com.br"
+      VBLOG_TOKEN: "XyZPn2tl5KluRQ2aRWGw"
+      VBLOG_BASE: "https://controleembarque.com.br"
       
       # Brudam Tracking
       BRUDAM_USUARIO: "659622e0526337fd21fb894cb24a72ee"
