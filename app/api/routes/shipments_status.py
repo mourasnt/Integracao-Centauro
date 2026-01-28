@@ -8,7 +8,6 @@ from typing import Optional, Any
 import json
 import base64
 import datetime
-from loguru import logger
 
 from fastapi import APIRouter, Depends, HTTPException, Body, Request, File, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,7 +38,6 @@ def parse_status_code(new_status: Any) -> Optional[str]:
     
     Returns the extracted code string or None.
     """
-    logger.info(f"[PARSE_STATUS_CODE] Input type: {type(new_status)}, value: {new_status}")
     code_val = None
     
     if isinstance(new_status, (str, int)):
@@ -49,24 +47,16 @@ def parse_status_code(new_status: Any) -> Optional[str]:
                 parsed = json.loads(s)
                 if isinstance(parsed, dict) and "code" in parsed:
                     code_val = str(parsed["code"])
-                    logger.info(f"[PARSE_STATUS_CODE] Extracted from JSON string: {code_val}")
-            except Exception as e:
-                logger.error(f"[PARSE_STATUS_CODE] Failed to parse JSON: {e}")
+            except Exception:
                 pass
         if code_val is None:
             code_val = s
-            logger.info(f"[PARSE_STATUS_CODE] Using as string: {code_val}")
     elif isinstance(new_status, dict):
         if "code" in new_status:
             code_val = str(new_status["code"])
-            logger.info(f"[PARSE_STATUS_CODE] Extracted from dict: {code_val}")
-        else:
-            logger.warning(f"[PARSE_STATUS_CODE] 'code' key not found. Keys: {list(new_status.keys())}")
     elif hasattr(new_status, "code"):
         code_val = str(new_status.code)
-        logger.info(f"[PARSE_STATUS_CODE] Extracted from attribute: {code_val}")
     
-    logger.info(f"[PARSE_STATUS_CODE] Final code_val: {code_val}")
     return code_val
 
 
@@ -163,10 +153,6 @@ async def update_status(
     if not shipment:
         raise HTTPException(404, "Shipment not found")
 
-    logger.info(f"[STATUS UPDATE CENTAURO] shipment_id={shipment_id}")
-    logger.info(f"[STATUS UPDATE CENTAURO] Content-Type: {request.headers.get('content-type') if request else 'N/A'}")
-    logger.info(f"[STATUS UPDATE CENTAURO] Has attachment: {attachment is not None}")
-    
     # Parse request based on content type
     new_status = None
     invoice_keys_filter: Optional[list[str]] = None
@@ -174,37 +160,26 @@ async def update_status(
     
     if request:
         content_type = request.headers.get("content-type", "")
-        logger.info(f"[STATUS UPDATE CENTAURO] Processing {content_type}")
         
         if content_type.startswith("application/json"):
             # Parse JSON body once
             try:
                 body = await request.json()
-                logger.info(f"[STATUS UPDATE CENTAURO] JSON body: {body}")
                 if isinstance(body, dict):
                     new_status = body
                     invoice_keys_filter = parse_invoice_keys(body)
                     attachments_input = body.get("anexos") or body.get("attachments")
-                    logger.info(f"[STATUS UPDATE CENTAURO] Parsed - new_status: {new_status}, invoice_keys: {invoice_keys_filter}")
-            except Exception as e:
-                logger.error(f"[STATUS UPDATE CENTAURO] Failed to parse JSON: {e}")
+            except Exception:
                 pass
         
         elif content_type.startswith("multipart/"):
             # Parse multipart form
-            logger.info(f"[STATUS UPDATE CENTAURO] Parsing multipart form")
             form_status = await parse_form_status(request)
             if form_status:
                 new_status = form_status
-                logger.info(f"[STATUS UPDATE CENTAURO] Form status: {form_status}")
-            else:
-                logger.warning(f"[STATUS UPDATE CENTAURO] No status found in form data")
 
-    logger.info(f"[STATUS UPDATE CENTAURO] Final new_status before parse_status_code: {new_status}")
-    
     # Extract status code
     code_val = parse_status_code(new_status)
-    logger.info(f"[STATUS UPDATE CENTAURO] Extracted code_val: {code_val}")
 
     if not code_val:
         raise HTTPException(400, "Invalid status: provide a code, e.g., {\"code\": \"1\"}")
