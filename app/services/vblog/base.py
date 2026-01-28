@@ -130,12 +130,23 @@ class VBlogBaseClient(ABC):
                 
             except Exception as e:
                 last_error = e
-                logger.warning(f"Network error on attempt {attempt + 1}/{self.max_retries}: {e}")
+                # Some httpx/httpcore exceptions have empty str() representation
+                # (e.g., anyio.EndOfStream, BrokenResourceError)
+                error_detail = str(e) if str(e) else f"{type(e).__name__}: args={e.args}"
+                logger.warning(
+                    f"Network error on attempt {attempt + 1}/{self.max_retries}: "
+                    f"{type(e).__name__} - {error_detail}",
+                    exc_info=True  # Include full traceback for debugging
+                )
             
             attempt += 1
             await asyncio.sleep(0.5 * attempt)  # Exponential backoff
         
-        error_msg = str(last_error) if last_error else "Max retries exceeded"
+        # Build detailed error message for final failure
+        if last_error:
+            error_msg = str(last_error) if str(last_error) else f"{type(last_error).__name__}: args={last_error.args}"
+        else:
+            error_msg = "Max retries exceeded"
         logger.error(f"Failed after {self.max_retries} attempts: {error_msg}")
         return False, error_msg, 0
 
