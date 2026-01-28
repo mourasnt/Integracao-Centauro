@@ -64,22 +64,15 @@ async def parse_form_status(request: Request) -> Optional[Any]:
     """Parse status from multipart form data."""
     try:
         form = await request.form()
-        status_json = form.get("novo_status_json") or form.get("novo_status") or form.get("new_status")
+        status_json = (
+            form.get("novo_status_json") or 
+            form.get("novo_status") or 
+            form.get("new_status") or 
+            form.get("status_data")
+        )
         if status_json:
             from app.schemas.shipment import ShipmentStatusInput
             return ShipmentStatusInput.model_validate_json(status_json)
-    except Exception:
-        pass
-    return None
-
-
-async def parse_json_attachments(request: Request) -> Optional[list]:
-    """Parse attachments from JSON body."""
-    try:
-        if request.headers.get("content-type", "").startswith("application/json"):
-            body = await request.json()
-            if isinstance(body, dict):
-                return body.get("anexos") or body.get("attachments")
     except Exception:
         pass
     return None
@@ -135,7 +128,6 @@ def parse_invoice_keys(body: dict) -> Optional[list[str]]:
 @router.post("/{shipment_id}/status")
 async def update_status(
     shipment_id: UUID,
-    new_status: Optional[Any] = Body(None, example={"code": "1"}),
     attachment: Optional[UploadFile] = File(None),
     request: Request = None,
     db: AsyncSession = Depends(get_db),
@@ -161,24 +153,30 @@ async def update_status(
     if not shipment:
         raise HTTPException(404, "Shipment not found")
 
-    # Parse request body for invoice keys filter
+    # Parse request based on content type
+    new_status = None
     invoice_keys_filter: Optional[list[str]] = None
-    try:
-        if request and request.headers.get("content-type", "").startswith("application/json"):
-            body = await request.json()
-            if isinstance(body, dict):
-                invoice_keys_filter = parse_invoice_keys(body)
-    except Exception:
-        pass
-
-    # Parse multipart form if applicable
-    if request and request.headers.get("content-type", "").startswith("multipart/"):
-        form_status = await parse_form_status(request)
-        if form_status:
-            new_status = form_status
-
-    # Parse attachments from JSON body
-    attachments_input = await parse_json_attachments(request) if request else None
+    attachments_input: Optional[list] = None
+    
+    if request:
+        content_type = request.headers.get("content-type", "")
+        
+        if content_type.startswith("application/json"):
+            # Parse JSON body once
+            try:
+                body = await request.json()
+                if isinstance(body, dict):
+                    new_status = body
+                    invoice_keys_filter = parse_invoice_keys(body)
+                    attachments_input = body.get("anexos") or body.get("attachments")
+            except Exception:
+                pass
+        
+        elif content_type.startswith("multipart/"):
+            # Parse multipart form
+            form_status = await parse_form_status(request)
+            if form_status:
+                new_status = form_status
 
     # Extract status code
     code_val = parse_status_code(new_status)
