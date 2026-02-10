@@ -28,7 +28,8 @@ services:
     container_name: centauro_app
     environment:
       # Database
-      DATABASE_URL: postgresql+asyncpg://centauro:centauro_secure_password@postgres:5432/centauro_db
+      DATABASE_URL: postgresql+asyncpg://centauro:centauro_secure_password@postgres:5432/${POSTGRES_DB}
+      AUTO_CREATE_DB: "true"
       
       # Security (MESMA SECRET_KEY da Nike para autenticação centralizada)
       SECRET_KEY: 2a12xVtfIpePbkrohfumSDBedzcOFbEaKDOsTcdqYDTIYfk8FOIqe

@@ -52,8 +52,20 @@ async def ensure_db_initialized() -> None:
         
         from app.models.base import Base
         
-        async with async_engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
+        try:
+            async with async_engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+        except Exception as exc:
+            # Provide clearer context on initialization failures (e.g., missing DB)
+            import logging
+            logging.exception("Database initialization failed; check connection and database existence.")
+            from sqlalchemy.exc import OperationalError
+            if isinstance(exc, OperationalError) or "does not exist" in str(exc).lower():
+                raise RuntimeError(
+                    "Database is missing or unreachable. Verify your DATABASE_URL and POSTGRES_DB; "
+                    "for local convenience set AUTO_CREATE_DB=true and ensure the DB user has CREATE DATABASE privilege."
+                ) from exc
+            raise
         
         _db_initialized = True
 

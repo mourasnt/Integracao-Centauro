@@ -48,5 +48,8 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import httpx; httpx.get('http://localhost:8000/health', timeout=5.0)"
 
-# Default command
+# Make entrypoint executable and use it to optionally create DB before starting app
+RUN chmod +x ./scripts/docker-entrypoint.sh
+
+ENTRYPOINT ["./scripts/docker-entrypoint.sh"]
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
