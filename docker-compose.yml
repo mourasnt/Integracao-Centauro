@@ -14,7 +14,7 @@ services:
     networks:
       - centauro_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U centauro"]
+      test: ["CMD-SHELL", "pg_isready -U centauro -d centauro_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,8 +28,13 @@ services:
     container_name: centauro_app
     environment:
       # Database
-      DATABASE_URL: postgresql+asyncpg://centauro:centauro_secure_password@postgres:5432/${POSTGRES_DB}
+      DATABASE_URL: postgresql+asyncpg://centauro:centauro_secure_password@postgres:5432/centauro_db
       AUTO_CREATE_DB: "true"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: centauro
+      POSTGRES_PASSWORD: centauro_secure_password
+      POSTGRES_DB: centauro_db
       
       # Security (MESMA SECRET_KEY da Nike para autenticação centralizada)
       SECRET_KEY: 2a12xVtfIpePbkrohfumSDBedzcOFbEaKDOsTcdqYDTIYfk8FOIqe
