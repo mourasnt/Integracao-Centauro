@@ -82,6 +82,7 @@ async def sync_shipments_from_vblog(
             "warnings": transit_resp.warnings,
             "code": transit_resp.code,
             "description": transit_resp.description,
+            "raw_xml": transit_resp.raw_xml,
         }
 
     # Collect CTe keys from transits
@@ -112,6 +113,7 @@ async def sync_shipments_from_vblog(
             "warnings": transit_resp.warnings + ["No CTe keys found in transits"],
             "code": transit_resp.code,
             "description": transit_resp.description,
+            "raw_xml": transit_resp.raw_xml,
         }
 
     # Prepare CTe downloader
@@ -186,4 +188,5 @@ async def sync_shipments_from_vblog(
         "warnings": transit_resp.warnings,
         "code": transit_resp.code,
         "description": transit_resp.description,
+        "raw_xml": transit_resp.raw_xml,
     }
